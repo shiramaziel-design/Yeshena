@@ -10,12 +10,13 @@ const difficultyTone = {
 }
 
 export default function PracticeCard({ prompt }: { prompt: PracticePrompt }) {
-  const { state, togglePracticeComplete } = useProgress()
+  const { state, togglePracticeComplete, setPracticeAnswer } = useProgress()
   const [open, setOpen] = useState(false)
   const [checked, setChecked] = useState<Record<string, boolean>>({})
 
   const isComplete = !!state.practiceCompleted[prompt.id]
   const checkedCount = Object.values(checked).filter(Boolean).length
+  const answer = state.practiceAnswers[prompt.id] ?? ''
 
   return (
     <Card>
@@ -44,6 +45,24 @@ export default function PracticeCard({ prompt }: { prompt: PracticePrompt }) {
           <p className="text-sm rounded-xl px-4 py-3" style={{ background: 'var(--bg-soft)', color: 'var(--text-soft)' }}>
             {prompt.guidance}
           </p>
+
+          <div>
+            <label htmlFor={`answer-${prompt.id}`} className="block text-sm font-semibold mb-2" style={{ color: 'var(--text)' }}>
+              התשובה שלי
+            </label>
+            <textarea
+              id={`answer-${prompt.id}`}
+              value={answer}
+              onChange={(e) => setPracticeAnswer(prompt.id, e.target.value)}
+              placeholder="כתבו כאן את התשובה שלכם..."
+              rows={6}
+              className="w-full rounded-xl border px-4 py-3 text-sm outline-none resize-y"
+              style={{ borderColor: 'var(--border)', background: 'var(--surface)', color: 'var(--text)' }}
+            />
+            <p className="mt-1 text-xs" style={{ color: 'var(--text-soft)' }}>
+              נשמר אוטומטית במכשיר שלכם. אחרי הכתיבה, השוו מול ההכוונה והמחוון למטה.
+            </p>
+          </div>
 
           <div>
             <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text)' }}>

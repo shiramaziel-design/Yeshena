@@ -15,12 +15,14 @@ interface ProgressState {
   flashcards: Record<string, FlashcardStatus>
   quizAttempts: QuizAttempt[]
   practiceCompleted: Record<string, boolean>
+  practiceAnswers: Record<string, string>
 }
 
 const emptyState: ProgressState = {
   flashcards: {},
   quizAttempts: [],
   practiceCompleted: {},
+  practiceAnswers: {},
 }
 
 interface ProgressContextValue {
@@ -28,6 +30,7 @@ interface ProgressContextValue {
   markFlashcard: (termId: string, status: FlashcardStatus) => void
   recordQuizAttempt: (score: number, total: number) => void
   togglePracticeComplete: (promptId: string) => void
+  setPracticeAnswer: (promptId: string, text: string) => void
   resetProgress: () => void
   stats: {
     knownTerms: number
@@ -42,7 +45,9 @@ interface ProgressContextValue {
 const ProgressContext = createContext<ProgressContextValue | null>(null)
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useLocalStorage<ProgressState>('yeshena-progress-v1', emptyState)
+  const [rawState, setState] = useLocalStorage<ProgressState>('yeshena-progress-v1', emptyState)
+  // merge defaults so state saved before a field existed doesn't crash reads of it
+  const state = useMemo<ProgressState>(() => ({ ...emptyState, ...rawState }), [rawState])
 
   const markFlashcard = (termId: string, status: FlashcardStatus) => {
     setState((prev) => ({
@@ -71,6 +76,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }))
   }
 
+  const setPracticeAnswer = (promptId: string, text: string) => {
+    setState((prev) => ({
+      ...prev,
+      practiceAnswers: { ...prev.practiceAnswers, [promptId]: text },
+    }))
+  }
+
   const resetProgress = () => setState(emptyState)
 
   const stats = useMemo(() => {
@@ -94,6 +106,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     markFlashcard,
     recordQuizAttempt,
     togglePracticeComplete,
+    setPracticeAnswer,
     resetProgress,
     stats,
   }

@@ -92,7 +92,7 @@ export default function Settings() {
           איפוס התקדמות
         </h2>
         <p className="text-sm mb-3" style={{ color: 'var(--text-soft)' }}>
-          פעולה זו תמחק את כל נתוני ההתקדמות השמורים במכשיר זה (כרטיסיות, חידונים ותרגול שהושלם). לא ניתן לשחזר.
+          פעולה זו תמחק את כל נתוני ההתקדמות השמורים במכשיר זה (כרטיסיות, חידונים, תשובות שכתבתם ותרגול שהושלם). לא ניתן לשחזר.
         </p>
         <div className="flex items-center gap-3">
           <Button variant={confirming ? 'primary' : 'ghost'} onClick={handleReset}>
